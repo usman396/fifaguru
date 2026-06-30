@@ -150,7 +150,7 @@ export function applyDecodedState(
   matches: BracketMatch[],
   picks: Record<string, string>
 ): BracketMatch[] {
-  let updated = matches.map((m) => ({
+  let updated: BracketMatch[] = matches.map((m) => ({
     ...m,
     predictedWinner: picks[m.id] ?? null,
   }));
