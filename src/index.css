@@ -1,0 +1,111 @@
+@import "tailwindcss";
+* { box-sizing: border-box; }
+
+/* ─── Aurora background ─── */
+@keyframes aurora {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+.aurora-bg {
+  background: linear-gradient(
+    -45deg,
+    #0a0f1e 0%, #0d2318 20%, #1a1040 40%,
+    #0d2318 60%, #0f172a 80%, #1a1040 100%
+  );
+  background-size: 400% 400%;
+  animation: aurora 20s ease infinite;
+}
+
+/* ─── Team slide-in (mount animation for advancing teams) ─── */
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.team-slide-in {
+  animation: slide-in 0.28s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* ─── Pulse glow (awaiting pick) ─── */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+  50%       { box-shadow: 0 0 14px 3px rgba(59,130,246,0.3); }
+}
+.card-pulse-glow {
+  animation: pulse-glow 2.4s ease-in-out infinite;
+}
+
+/* ─── Shimmer sweep on predicted winner ─── */
+@keyframes shimmer {
+  0%   { background-position: -250% center; }
+  100% { background-position: 250% center; }
+}
+.winner-shimmer-row::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(250,204,21,0.12) 45%,
+    rgba(250,204,21,0.22) 50%,
+    rgba(250,204,21,0.12) 55%,
+    transparent 100%
+  );
+  background-size: 250% 100%;
+  animation: shimmer 2.6s linear infinite;
+  pointer-events: none;
+}
+
+/* ─── Correct-pick glow ─── */
+@keyframes correct-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+  50%       { box-shadow: 0 0 16px 4px rgba(34,197,94,0.25); }
+}
+.card-correct-glow {
+  animation: correct-glow 2s ease-in-out infinite;
+}
+
+/* ─── Shake (wrong pick) ─── */
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  15%     { transform: translateX(-6px); }
+  30%     { transform: translateX(6px); }
+  45%     { transform: translateX(-4px); }
+  60%     { transform: translateX(4px); }
+  75%     { transform: translateX(-2px); }
+}
+.card-shake { animation: shake 0.5s ease-in-out; }
+
+/* ─── Confetti fall ─── */
+@keyframes confetti-fall {
+  0%   { transform: translateY(-40px) rotate(0deg) scale(1); opacity: 1; }
+  80%  { opacity: 0.8; }
+  100% { transform: translateY(110vh) rotate(800deg) scale(0.6); opacity: 0; }
+}
+
+/* ─── Champion card celebrate ─── */
+@keyframes celebrate {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.03); }
+}
+.card-celebrate {
+  animation: celebrate 1.2s ease-in-out infinite;
+}
+
+/* ─── Count-up number flash ─── */
+@keyframes num-flash {
+  0%   { color: #facc15; transform: scale(1.15); }
+  100% { color: inherit; transform: scale(1); }
+}
+.num-flash { animation: num-flash 0.4s ease-out; }
+
+/* ─── Gradient text ─── */
+.gradient-text {
+  background: linear-gradient(90deg, #94a3b8, #e2e8f0, #94a3b8);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
