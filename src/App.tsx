@@ -33,7 +33,7 @@ function App() {
 
   // Fetch actual results
   useEffect(() => {
-    fetch("/results.json")
+    fetch(`/results.json?v=${Date.now()}`)
       .then((r) => r.json())
       .then((data: ResultsData) => {
         if (Object.keys(data.matches).length > 0) setResults(data);
