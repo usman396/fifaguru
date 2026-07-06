@@ -2,6 +2,7 @@ import type { BracketMatch, ResultsData } from "../types";
 import { ROUND_LABELS } from "../types";
 import type { Round } from "../types";
 import { getMatchStatus } from "../scoring";
+import { getActualParticipants } from "../bracketLogic";
 import { MatchCard } from "./MatchCard";
 
 interface Props {
@@ -58,12 +59,18 @@ export function BracketGrid({ matches, results, showResults, onPick }: Props) {
               {roundMatches.map((match) => {
                 const status = getMatchStatus(match, showResults ? results : null);
                 const actualWinner = results?.matches[match.id]?.winner ?? null;
+                const [actualHome, actualAway] =
+                  results && showResults
+                    ? getActualParticipants(match.id, results)
+                    : [null, null];
                 return (
                   <MatchCard
                     key={match.id}
                     match={match}
                     status={status}
                     actualWinner={showResults ? actualWinner : null}
+                    actualHome={actualHome}
+                    actualAway={actualAway}
                     onPick={onPick}
                     showResults={showResults}
                     isFinal={isFinalRound}

@@ -1,4 +1,4 @@
-import type { BracketMatch, Round } from "./types";
+import type { BracketMatch, Round, ResultsData } from "./types";
 import { ROUNDS } from "./types";
 import { R32_MATCHUPS } from "./data";
 
@@ -157,4 +157,52 @@ export function applyDecodedState(
   // Re-propagate to fill in team slots for later rounds
   updated = propagatePicks(updated);
   return updated;
+}
+
+/**
+ * Derive the actual teams that play in a given match slot by tracing
+ * the bracket tree through results.json.
+ *
+ * - r32: always fixed from R32_MATCHUPS
+ * - r16_N: winner of r32_(2N) vs winner of r32_(2N+1)
+ * - qf_N:  winner of r16_(2N) vs winner of r16_(2N+1)
+ * - sf_N:  winner of qf_(2N)  vs winner of qf_(2N+1)
+ * - final: winner of sf_0     vs winner of sf_1
+ *
+ * Returns [null, null] if the feeder results are not yet available.
+ */
+export function getActualParticipants(
+  matchId: string,
+  results: ResultsData
+): [string | null, string | null] {
+  if (matchId.startsWith("r32_")) {
+    const idx = parseInt(matchId.split("_")[1]);
+    return [R32_MATCHUPS[idx][0], R32_MATCHUPS[idx][1]];
+  }
+
+  let homeFeeder: string;
+  let awayFeeder: string;
+
+  if (matchId.startsWith("r16_")) {
+    const i = parseInt(matchId.split("_")[1]);
+    homeFeeder = `r32_${i * 2}`;
+    awayFeeder = `r32_${i * 2 + 1}`;
+  } else if (matchId.startsWith("qf_")) {
+    const i = parseInt(matchId.split("_")[1]);
+    homeFeeder = `r16_${i * 2}`;
+    awayFeeder = `r16_${i * 2 + 1}`;
+  } else if (matchId.startsWith("sf_")) {
+    const i = parseInt(matchId.split("_")[1]);
+    homeFeeder = `qf_${i * 2}`;
+    awayFeeder = `qf_${i * 2 + 1}`;
+  } else if (matchId === "final") {
+    homeFeeder = "sf_0";
+    awayFeeder = "sf_1";
+  } else {
+    return [null, null];
+  }
+
+  const home = results.matches[homeFeeder]?.winner ?? null;
+  const away = results.matches[awayFeeder]?.winner ?? null;
+  return [home, away];
 }

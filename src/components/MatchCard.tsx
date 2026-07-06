@@ -7,15 +7,31 @@ interface Props {
   match: BracketMatch;
   status: MatchStatus;
   actualWinner?: string | null;
+  /** Actual home team derived from results (null = not yet known) */
+  actualHome?: string | null;
+  /** Actual away team derived from results (null = not yet known) */
+  actualAway?: string | null;
   onPick: (matchId: string, team: string) => void;
   showResults: boolean;
   isFinal?: boolean;
 }
 
-export function MatchCard({ match, status, actualWinner, onPick, showResults, isFinal }: Props) {
-  const teams = [match.home, match.away].filter(Boolean) as string[];
+export function MatchCard({ match, status, actualWinner, actualHome, actualAway, onPick, showResults, isFinal }: Props) {
+  // When results are shown, display the real teams derived from the bracket tree.
+  // Fall back to predicted teams if actual participants aren't known yet.
+  const displayHome = showResults && actualHome != null ? actualHome : match.home;
+  const displayAway = showResults && actualAway != null ? actualAway : match.away;
+  const teams = [displayHome, displayAway].filter(Boolean) as string[];
   const canPick = teams.length === 2;
   const awaitingPick = canPick && !match.predictedWinner;
+
+  // Ghost pick: user predicted a team that didn't actually make it to this match.
+  // Only relevant when we know the actual teams and the user made a pick.
+  const pickedIsInMatch = teams.includes(match.predictedWinner ?? "");
+  const ghostPick =
+    showResults && match.predictedWinner && teams.length > 0 && !pickedIsInMatch
+      ? match.predictedWinner
+      : null;
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Shake animation when wrong pick is revealed
@@ -57,7 +73,9 @@ export function MatchCard({ match, status, actualWinner, onPick, showResults, is
       {teams.map((code) => {
         const team = TEAMS[code];
         const isPicked = match.predictedWinner === code;
-        const isLoser = !!(match.predictedWinner && !isPicked);
+        // Only dim the non-picked team when the pick is actually one of the displayed teams.
+        // If the pick is a ghost (not in match), both teams stay fully visible.
+        const isLoser = pickedIsInMatch && !!(match.predictedWinner && !isPicked);
         const isActualWinner = showResults && actualWinner === code;
 
         // Badge content & colour
@@ -137,6 +155,30 @@ export function MatchCard({ match, status, actualWinner, onPick, showResults, is
           </button>
         );
       })}
+
+      {/* Ghost pick footer — shown when the user's predicted team didn't make it to this match */}
+      {ghostPick && (() => {
+        const ghostTeam = TEAMS[ghostPick];
+        return (
+          <div className="flex items-center gap-1.5 px-3 py-1.5 border-t border-white/8 bg-black/20">
+            <span className="text-[10px] text-slate-500 shrink-0">Your pick:</span>
+            {ghostTeam && (
+              <img
+                src={`https://flagcdn.com/w20/${ghostTeam.alpha2}.png`}
+                srcSet={`https://flagcdn.com/w40/${ghostTeam.alpha2}.png 2x`}
+                width={14}
+                height={10}
+                alt={ghostTeam.name}
+                className="rounded-sm opacity-40 shrink-0"
+              />
+            )}
+            <span className="text-[10px] text-slate-500 truncate line-through">
+              {ghostTeam?.name ?? ghostPick}
+            </span>
+            <span className="ml-auto text-xs font-bold text-red-400 shrink-0">✗</span>
+          </div>
+        );
+      })()}
     </div>
   );
 }
