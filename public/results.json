@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-07T00:00:00Z",
+  "updatedAt": "2026-07-08T00:00:00Z",
   "matches": {
     "r32_2": { "winner": "CAN", "score": "0–1" },
     "r32_0": { "winner": "PRY", "score": "1–1 (aet, 3–4 pens)" },
@@ -22,6 +22,8 @@
     "r16_4": { "winner": "NOR", "score": "1–2" },
     "r16_5": { "winner": "ENG", "score": "2–3" },
     "r16_2": { "winner": "ESP", "score": "0–1" },
-    "r16_3": { "winner": "BEL", "score": "1–4" }
+    "r16_3": { "winner": "BEL", "score": "1–4" },
+    "r16_6": { "winner": "ARG", "score": "3–2" },
+    "r16_7": { "winner": "CHE", "score": "0–0 (aet, 4–3 pens)" }
   }
 }
